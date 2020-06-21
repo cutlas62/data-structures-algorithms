@@ -147,6 +147,31 @@ void printShortestRoute (unordered_map<string, vector<string>> graph, string sta
 
 bool hasCycle (unordered_map<string, vector<string>> graph)
 {
+
+    deque<string> nodesToVisit;
+    nodesToVisit.push_back(graph.begin()->first);
+    unordered_set<string> visitedNodes;
+
+    while(!nodesToVisit.empty())
+    {
+        string curNode = nodesToVisit.front();
+        nodesToVisit.pop_front();
+        visitedNodes.insert(curNode);
+
+        if (visitedNodes.find(curNode) != visitedNodes.end())
+        {
+            return true;
+        }
+
+        for(string neighbor : graph.find(curNode)->second)
+        {
+            if (visitedNodes.find(neighbor) == visitedNodes.end())
+            {
+                nodesToVisit.push_back(neighbor);
+            }
+        }
+    }
+
     return false;
 }
 
