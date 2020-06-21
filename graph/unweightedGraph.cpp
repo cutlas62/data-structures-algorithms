@@ -103,51 +103,51 @@ void printShortestRoute (unordered_map<string, vector<string>> graph, string sta
 
     deque<string> nodesToVisit;
     nodesToVisit.push_back(startNode);
-    unordered_map<string, string> traces;	// key: child, value: parent
+    unordered_map<string, string> traces;   // key: child, value: parent
     traces.insert(make_pair(startNode, ""));
 
-    unordered_set<string> visitedNodes;
+    //unordered_set<string> visitedNodes;
 
-    while (!nodesToVisit.empty()){
-    	string curNode = nodesToVisit.front();
-    	nodesToVisit.pop_front();
-    	visitedNodes.insert(curNode);
+    while (!nodesToVisit.empty())
+    {
+        string curNode = nodesToVisit.front();
+        nodesToVisit.pop_front();
 
-    	if (curNode == endNode){
+        if (curNode == endNode)
+        {
+            vector<string> reversedPath;
+            string curTrace = curNode;
 
+            while(curTrace != "")
+            {
+                reversedPath.push_back(curTrace);
+                curTrace = traces.find(curTrace)->second;
+            }
 
-    		vector<string> reversedPath;
+            reverse(reversedPath.begin(), reversedPath.end());
 
-    		string curTrace = curNode;
+            for (string str : reversedPath)
+            {
+                printf("%s ", str.c_str());
+            }
+            printf("\n\n");
+            return;
+        }
 
-    		while(curTrace != ""){
-    			reversedPath.push_back(curTrace);
-    			curTrace = traces.find(curTrace)->second;
-    		}
-
-    		reverse(reversedPath.begin(), reversedPath.end());
-
-    		for (string str : reversedPath){
-    			printf("%s ", str.c_str());
-    		}
-    		printf("\n\n");
-    		return;
-    	}
-
-    	for (string neighbor : graph.find(curNode)->second){
-    		if (visitedNodes.find(neighbor) == visitedNodes.end()){
-    			nodesToVisit.push_back(neighbor);
-    			traces.insert(make_pair(neighbor, curNode));
-    		}
-    	}
-
-
-
+        for (string neighbor : graph.find(curNode)->second)
+        {
+            if (traces.find(neighbor) == traces.end())
+            {
+                nodesToVisit.push_back(neighbor);
+                traces.insert(make_pair(neighbor, curNode));
+            }
+        }
     }
+}
 
-
-
-
+bool hasCycle (unordered_map<string, vector<string>> graph)
+{
+    return false;
 }
 
 
@@ -197,6 +197,8 @@ int main (int argc, char *argv [])
     //printBFS(unweightedGraph, "Sevilla");
 
     printShortestRoute(unweightedGraph, "Cadiz", "Oviedo");
-    printShortestRoute(unweightedGraph, "Almeria", "Vitoria");
+    //printShortestRoute(unweightedGraph, "Almeria", "Vitoria");
+
+    printf("The graph is %s\n\n", hasCycle(unweightedGraph) ? "Cyclic" : "Acyclic");
 
 }
