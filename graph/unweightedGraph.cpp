@@ -1,19 +1,20 @@
 #include <cstdio>
+#include <algorithm>
 #include <vector>
-#include <unordered_map>
 #include <stack>
-#include <unordered_set>
 #include <deque>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
-// Compiled using 'g++ graph.cpp -o graph' and executed using './graph' on Ubuntu 20.04
+// Compiled using 'g++ unweightedGraph.cpp -o graph' and executed using './graph' on Ubuntu 20.04
 // SpanishCitiesGraph.png was used as the test graph
 
 
 void printDFS (unordered_map<string, vector<string>> graph, string startNode)
 {
-    printf("\nDFS\n");
+    printf("\nDFS:\n");
     if (graph.count(startNode) == 0)
     {
         throw invalid_argument("startNode is not in the graph");
@@ -32,7 +33,7 @@ void printDFS (unordered_map<string, vector<string>> graph, string startNode)
         {
             continue;
         }
-        
+
         visitedNodes.insert(curNode);
         printf("%s ", curNode.c_str());
 
@@ -52,12 +53,11 @@ void printDFS (unordered_map<string, vector<string>> graph, string startNode)
 
 void printBFS (unordered_map<string, vector<string>> graph, string startNode)
 {
-    printf("\nBFS\n");
+    printf("\nBFS:\n");
     if (graph.count(startNode) == 0)
     {
         throw invalid_argument("startNode is not in the graph");
     }
-    int nNodes = 0;
 
     deque<string> nodesToVisit;
     nodesToVisit.push_back(startNode);
@@ -68,13 +68,13 @@ void printBFS (unordered_map<string, vector<string>> graph, string startNode)
         string curNode = nodesToVisit.front();
         nodesToVisit.pop_front();
 
-        if(visitedNodes.count(curNode)){
-        	continue;
+        if(visitedNodes.count(curNode))
+        {
+            continue;
         }
 
         visitedNodes.insert(curNode);
         printf("%s ", curNode.c_str());
-        nNodes++;
 
         for (string neighbor : graph.find(curNode)->second)
         {
@@ -86,6 +86,68 @@ void printBFS (unordered_map<string, vector<string>> graph, string startNode)
     }
     printf("\n%ld nodes\n", visitedNodes.size());
     printf("\n");
+}
+
+void printShortestRoute (unordered_map<string, vector<string>> graph, string startNode, string endNode)
+{
+    if (graph.count(startNode) == 0)
+    {
+        throw invalid_argument("startNode is not in the graph");
+    }
+    if (graph.count(endNode) == 0)
+    {
+        throw invalid_argument("endNode is not in the graph");
+    }
+
+    printf("Shortest route from %s to %s:\n", startNode.c_str(), endNode.c_str());
+
+    deque<string> nodesToVisit;
+    nodesToVisit.push_back(startNode);
+    unordered_map<string, string> traces;	// key: child, value: parent
+    traces.insert(make_pair(startNode, ""));
+
+    unordered_set<string> visitedNodes;
+
+    while (!nodesToVisit.empty()){
+    	string curNode = nodesToVisit.front();
+    	nodesToVisit.pop_front();
+    	visitedNodes.insert(curNode);
+
+    	if (curNode == endNode){
+
+
+    		vector<string> reversedPath;
+
+    		string curTrace = curNode;
+
+    		while(curTrace != ""){
+    			reversedPath.push_back(curTrace);
+    			curTrace = traces.find(curTrace)->second;
+    		}
+
+    		reverse(reversedPath.begin(), reversedPath.end());
+
+    		for (string str : reversedPath){
+    			printf("%s ", str.c_str());
+    		}
+    		printf("\n\n");
+    		return;
+    	}
+
+    	for (string neighbor : graph.find(curNode)->second){
+    		if (visitedNodes.find(neighbor) == visitedNodes.end()){
+    			nodesToVisit.push_back(neighbor);
+    			traces.insert(make_pair(neighbor, curNode));
+    		}
+    	}
+
+
+
+    }
+
+
+
+
 }
 
 
@@ -133,5 +195,8 @@ int main (int argc, char *argv [])
     printBFS(unweightedGraph, "Madrid");
     //printBFS(unweightedGraph, "Requena");
     //printBFS(unweightedGraph, "Sevilla");
+
+    printShortestRoute(unweightedGraph, "Cadiz", "Oviedo");
+    printShortestRoute(unweightedGraph, "Almeria", "Vitoria");
 
 }
