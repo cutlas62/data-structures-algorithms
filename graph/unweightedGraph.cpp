@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <climits>
 #include <algorithm>
 #include <vector>
 #include <stack>
@@ -12,7 +13,7 @@ using namespace std;
 // SpanishCitiesGraph.png was used as the test graph
 
 
-void printDFS (unordered_map<string, vector<string>> graph, string startNode)
+void printDFS (unordered_map<string, vector<string>> &graph, string startNode)
 {
     printf("\nDFS:\n");
     if (graph.count(startNode) == 0)
@@ -51,7 +52,7 @@ void printDFS (unordered_map<string, vector<string>> graph, string startNode)
 
 
 
-void printBFS (unordered_map<string, vector<string>> graph, string startNode)
+void printBFS (unordered_map<string, vector<string>> &graph, string startNode)
 {
     printf("\nBFS:\n");
     if (graph.count(startNode) == 0)
@@ -88,7 +89,7 @@ void printBFS (unordered_map<string, vector<string>> graph, string startNode)
     printf("\n");
 }
 
-void printShortestRoute (unordered_map<string, vector<string>> graph, string startNode, string endNode)
+void printShortestRoute (unordered_map<string, vector<string>> &graph, string startNode, string endNode)
 {
     if (graph.count(startNode) == 0)
     {
@@ -145,7 +146,7 @@ void printShortestRoute (unordered_map<string, vector<string>> graph, string sta
     }
 }
 
-bool hasCycle (unordered_map<string, vector<string>> graph)
+bool hasCycle (unordered_map<string, vector<string>> &graph)
 {
 
     deque<string> nodesToVisit;
@@ -196,6 +197,98 @@ bool isAdjacencyMatrixCorrect (int matrix [29][29], int nRows, int nCols)
     }
 
     return true;
+}
+
+// It doesn't make much sense to implement Prim on an unweighted graph but it's useful for me to practice
+unordered_map<string, vector<string>> primMST (unordered_map<string, vector<string>> &graph)
+{
+
+    // This is the graph we'll return
+    unordered_map<string, vector<string>> mcst;
+
+    // Set to keep track of the already included vertices in the mst
+    unordered_set<string> includedVertices;
+    // Map with the updated weights of the edges connecting neighbors to the included vertices
+    unordered_map<string, pair<string, int>> edgesWeights; //newVertex, parent, weight
+    int nVertices = 0;
+
+    // Fill in edgesWeights with the vertices in graph and set the initial weight to infinite
+    unordered_map<string, vector<string>>::iterator it;
+    for (it = graph.begin(); it != graph.end(); it++)
+    {
+        nVertices++;
+        edgesWeights.insert(make_pair(it->first, make_pair("", INT_MAX)));
+    }
+    // Except for the first vertex, whichever it is
+    edgesWeights.begin()->second.second = 0;
+
+    // While there are still vertices to connect
+    while (includedVertices.size() < nVertices)
+    {
+        int minWeight = INT_MAX;
+        string selectedVertex = "";
+        string selectedVertexParent = "";
+
+        // Find the not-yet-connected vertex with the minimum weight. In this scenario, all the weights are 1
+        unordered_map<string, pair<string, int>>::iterator it;
+        for(it = edgesWeights.begin(); it != edgesWeights.end(); it++)
+        {
+            if(includedVertices.find(it->first) == includedVertices.end())
+            {
+                if (it->second.second < minWeight)
+                {
+                    selectedVertex = it->first;
+                    selectedVertexParent = it->second.first;
+                    minWeight = it->second.second;
+                }
+            }
+        }
+
+        // Incude it in the set
+        includedVertices.insert(selectedVertex);
+
+        // And add the edge to the returning graph
+        mcst.insert(make_pair(selectedVertex, vector<string>()));
+        if(selectedVertexParent != "")
+        {
+            mcst.find(selectedVertex)->second.push_back(selectedVertexParent);
+            mcst.find(selectedVertexParent)->second.push_back(selectedVertex);
+        }
+        
+        // Update the edges' weights of the new neighbors
+        vector<string> neighbors = graph.find(selectedVertex)->second;
+        for(string neighbor : neighbors)
+        {
+            edgesWeights.find(neighbor)->second.first = selectedVertex;
+            edgesWeights.find(neighbor)->second.second = 1;
+        }
+
+    }
+
+
+    return mcst;
+}
+
+void printGraph(unordered_map<string, vector<string>> &graph)
+{
+
+    unordered_map<string, vector<string>>::iterator it;
+    for (it = graph.begin(); it != graph.end(); it++)
+    {
+        string curNode = it->first;
+        printf("%s\n", curNode.c_str());
+
+        vector<string> neighbors = it->second;
+        if (!neighbors.empty())
+        {
+            printf("\t");
+        }
+        for(string curNeighbor : neighbors)
+        {
+            printf("%s ", curNeighbor.c_str());
+        }
+        printf("\n");
+    }
 }
 
 int main (int argc, char *argv [])
@@ -291,4 +384,6 @@ int main (int argc, char *argv [])
 
     printf("The graph is %s\n\n", hasCycle(unweightedGraph) ? "Cyclic" : "Acyclic");
 
+    unordered_map<string, vector<string>> prim = primMST(unweightedGraph);
+    printGraph(prim);
 }
