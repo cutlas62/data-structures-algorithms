@@ -1,4 +1,11 @@
 #include <cstdio>
+#include <vector>
+#include <string>
+#include <stack>
+#include <unordered_set>
+
+using namespace std;
+
 
 bool isAdjacencyMatrixCorrect (double matrix [29][29], int nRows, int nCols)
 {
@@ -24,8 +31,66 @@ bool isAdjacencyMatrixCorrect (double matrix [29][29], int nRows, int nCols)
     return isCorrect;
 }
 
+// Let's say all edges have the same weight, I just wanted to write DFS using adjacency matrix
+void printDFS(double matrix [29][29], vector<string> &vertices, string startNode)
+{
+
+    stack<string> nodesToVisit;
+    nodesToVisit.push(startNode);
+    unordered_set<string> visitedNodes;
+
+    int verticesSize = vertices.size();
+
+    while (!nodesToVisit.empty())
+    {
+        string curNode = nodesToVisit.top();
+        nodesToVisit.pop();
+
+        if (visitedNodes.find(curNode) != visitedNodes.end()){
+        	continue;
+        }
+
+        visitedNodes.insert(curNode);
+        printf("%s ", curNode.c_str());
+
+
+        int curNodeIndex = 0;
+        for (int i = 0; i < verticesSize; i++)
+        {
+            if (vertices[i] == curNode)
+            {
+                curNodeIndex = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i < verticesSize; i++)
+        {
+            if (matrix[curNodeIndex][i] != 0)
+            {
+                if(visitedNodes.find(vertices[i]) == visitedNodes.end())
+                {
+                    nodesToVisit.push(vertices[i]);
+                }
+            }
+        }
+    }
+    printf("\n");
+
+}
+
+
+
 int main (int argc, char *argv [])
 {
+    vector<string> vertices = {	"Madrid", "Toledo",	"Caceres", "Merida", "Segovia", "Zamora",
+                                "Vigo", "Coruna", "Burgos", "Leon", "Oviedo", "Vitoria",
+                                "Calatayud", "Zaragoza", "Huesca", "Taragona", "Cuenca",
+                                "Requena", "Valencia", "Castellon", "Albacete", "Alicante",
+                                "Puertollano", "Cordoba", "Sevilla", "Cadiz", "Malaga",
+                                "Granada", "Almeria"
+                              };
+
     double adjacencyMatrixGraph [29][29] =
     {
         {0, 73.0, 303.2, 0, 91.2, 0, 0, 0, 0, 0, 0, 0, 231.7, 0, 0, 0, 168.2, 0, 0, 0, 0, 0, 242.6, 0, 0, 0, 0, 0, 0},  // Madrid
@@ -58,5 +123,7 @@ int main (int argc, char *argv [])
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 207.8, 0, 0, 126.5, 0, 167.6},    		// Granada
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 291.6, 0, 0, 0, 0, 0, 167.6, 0}     			// Almeria
     };
+
+    printDFS(adjacencyMatrixGraph, vertices, "Madrid");
 
 }
