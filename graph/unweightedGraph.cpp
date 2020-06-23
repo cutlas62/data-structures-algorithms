@@ -50,6 +50,9 @@ void printDFS (unordered_map<string, vector<string>> &graph, string startNode)
     printf("\n");
 }
 
+void printDFS(int matrix [29][29]){
+    
+}
 
 
 void printBFS (unordered_map<string, vector<string>> &graph, string startNode)
