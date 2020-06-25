@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// Compiled with 'g++ weightedGraph.cpp -o graph' and ran with './graph' on Ubuntu 20.04
 
 bool isAdjacencyMatrixCorrect (double matrix [29][29], int nRows, int nCols)
 {
@@ -32,7 +33,7 @@ bool isAdjacencyMatrixCorrect (double matrix [29][29], int nRows, int nCols)
 }
 
 // Let's say all edges have the same weight, I just wanted to write DFS using adjacency matrix
-void printDFS(double matrix [29][29], vector<string> &vertices, string startNode)
+void printDFS(vector<string> &vertices, double matrix [29][29], string startNode)
 {
 
     stack<string> nodesToVisit;
@@ -76,6 +77,11 @@ void printDFS(double matrix [29][29], vector<string> &vertices, string startNode
         }
     }
     printf("\n");
+
+}
+
+
+void printPrimMCST (vector<string>& vertices, double[29][29] matrix){
 
 }
 
@@ -124,6 +130,8 @@ int main (int argc, char *argv [])
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 291.6, 0, 0, 0, 0, 0, 167.6, 0}     			// Almeria
     };
 
-    printDFS(adjacencyMatrixGraph, vertices, "Madrid");
+    printDFS(vertices, adjacencyMatrixGraph, "Madrid");
+
+    printPrimMCST(vertices, adjacencyMatrixGraph);
 
 }
