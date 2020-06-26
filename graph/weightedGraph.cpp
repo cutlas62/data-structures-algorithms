@@ -1,8 +1,10 @@
 #include <cstdio>
+#include <limits>
 #include <vector>
 #include <string>
 #include <stack>
 #include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
@@ -47,8 +49,9 @@ void printDFS(vector<string> &vertices, double matrix [29][29], string startNode
         string curNode = nodesToVisit.top();
         nodesToVisit.pop();
 
-        if (visitedNodes.find(curNode) != visitedNodes.end()){
-        	continue;
+        if (visitedNodes.find(curNode) != visitedNodes.end())
+        {
+            continue;
         }
 
         visitedNodes.insert(curNode);
@@ -80,11 +83,120 @@ void printDFS(vector<string> &vertices, double matrix [29][29], string startNode
 
 }
 
+// First working version, future refactors will come
+void printPrimMCST (vector<string> &vertices, double matrix[29][29])
+{
 
-void printPrimMCST (vector<string>& vertices, double[29][29] matrix){
+    unordered_set<string> nodesIncludedInMCST;
+    unordered_map<string, pair<string, double>> edgeCosts;	// <child, <parent, cost>>
+    unordered_map<string, vector<string>> mcst;
+    double mcstCost = 0;
+
+    for (string curVertex : vertices)
+    {
+        edgeCosts.insert(make_pair(curVertex, make_pair("", numeric_limits<double>::max())));
+    }
+    edgeCosts.begin()->second.second = 0;
+
+    int nVertices = vertices.size();
+
+    while (nodesIncludedInMCST.size() < nVertices)
+    {
+        // Pick the vertex with the lowest cost, not included in nodesIncludedInMCST
+        double minCost = numeric_limits<double>::max();
+        string curVertex = "";
+        string curVertexParent = "";
+        unordered_map<string, pair<string, double>>::iterator it;
+        for (it = edgeCosts.begin(); it != edgeCosts.end(); it++)
+        {
+            if (nodesIncludedInMCST.find(it->first) == nodesIncludedInMCST.end())
+            {
+                if (it->second.second < minCost)
+                {
+                    curVertex = it->first;
+                    curVertexParent = it->second.first;
+                    minCost = it->second.second;
+                }
+            }
+        }
+        mcstCost += minCost;
+
+
+        // Include the selected vertex in the set
+        nodesIncludedInMCST.insert(curVertex);
+        if (mcst.find(curVertex) == mcst.end())
+        {
+            mcst.insert(make_pair(curVertex, vector<string>()));
+        }
+        if(curVertexParent != "")
+        {
+            mcst.find(curVertex)->second.push_back(curVertexParent);
+
+            if(mcst.find(curVertexParent) == mcst.end())
+            {
+                mcst.insert(make_pair(curVertexParent, vector<string>()));
+
+            }
+            mcst.find(curVertexParent)->second.push_back(curVertex);
+        }
+
+
+        // Update edgeCosts with the new neighbors
+        int curVertexIndex = 0;
+        for (int i = 0; i < nVertices; i++)
+        {
+            if (curVertex == vertices[i])
+            {
+                curVertexIndex = i;
+            }
+        }
+
+        for (int i = 0; i < 29; i++)
+        {
+            if (matrix[curVertexIndex][i] != 0 && matrix[curVertexIndex][i] < edgeCosts.find(vertices[i])->second.second)
+            {
+                edgeCosts.find(vertices[i])->second.first = curVertex;
+                edgeCosts.find(vertices[i])->second.second = matrix[curVertexIndex][i];
+            }
+        }
+    }
+
+
+    // Print the mcst graph
+    printf("\nMCST cost = %.1f\n", mcstCost);
+    unordered_map<string, vector<string>>::iterator it;
+    for (it = mcst.begin(); it != mcst.end(); it++)
+    {
+        string curNode = it->first;
+        printf("%s\n", curNode.c_str());
+
+        vector<string> neighbors = it->second;
+        if (!neighbors.empty())
+        {
+            printf("\t");
+        }
+        for(string curNeighbor : neighbors)
+        {
+            printf("%s ", curNeighbor.c_str());
+        }
+        printf("\n");
+    }
 
 }
 
+
+double calculateGraphCost(double matrix[29][29])
+{
+    double graphCost = 0;
+    for (int i = 0; i < 29; i++)
+    {
+        for (int j = i; j < 29; j++)
+        {
+            graphCost += matrix[i][j];
+        }
+    }
+    return (graphCost);
+}
 
 
 int main (int argc, char *argv [])
@@ -132,6 +244,7 @@ int main (int argc, char *argv [])
 
     printDFS(vertices, adjacencyMatrixGraph, "Madrid");
 
+    printf("\nInitial graph cost = %.1f\n", calculateGraphCost(adjacencyMatrixGraph));
     printPrimMCST(vertices, adjacencyMatrixGraph);
 
 }
