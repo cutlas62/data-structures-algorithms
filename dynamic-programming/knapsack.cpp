@@ -22,6 +22,8 @@ public:
 		* Limited types of objects
 		* Unlimited amounts of each object
 		* Indivisible objects
+
+	Returning just the maximum profit
 */
 unsigned int maxProfit_LUI (const vector<Jewel> &jewels, unsigned int capacity)
 {
@@ -29,30 +31,22 @@ unsigned int maxProfit_LUI (const vector<Jewel> &jewels, unsigned int capacity)
 
     for (unsigned int curCapacity = 0; curCapacity < capacity + 1; curCapacity++)
     {
-
         unsigned int maxProfitAtCurCapacity = 0;
 
         for (Jewel curJewel : jewels)
         {
-
             if (curJewel.weight <= curCapacity)
             {
                 unsigned int maxProfitUsingCurJewel = curJewel.profit + maxProfitAtCapacities[curCapacity - curJewel.weight];
-
                 maxProfitAtCurCapacity = max(maxProfitAtCurCapacity, maxProfitUsingCurJewel);
             }
-
         }
 
-        //printf("Max profit = %u with capacity = %u\n", maxProfitAtCurCapacity, curCapacity);
         maxProfitAtCapacities[curCapacity] = maxProfitAtCurCapacity;
-
-
     }
-
-
     return maxProfitAtCapacities[capacity];
 }
+
 
 int main (int argc, char *argv [])
 {
