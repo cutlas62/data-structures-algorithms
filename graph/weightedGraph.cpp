@@ -165,7 +165,7 @@ void printPrimMCST (vector<string> &vertices, double matrix[29][29])
 
 
     // Print the mcst graph
-    printf("\nMCST cost = %.1f\n", mcstCost);
+    printf("\nPrim's MCST cost = %.1f\n", mcstCost);
     unordered_map<string, vector<string>>::iterator it;
     for (it = mcst.begin(); it != mcst.end(); it++)
     {
@@ -361,7 +361,7 @@ int main (int argc, char *argv [])
     //printDFS(vertices, adjacencyMatrixGraph, "Madrid");
 
     //printf("\nInitial graph cost = %.1f\n", calculateGraphCost(adjacencyMatrixGraph));
-    //printPrimMCST(vertices, adjacencyMatrixGraph);
+    printPrimMCST(vertices, adjacencyMatrixGraph);
 
     printKruskalMCST(vertices, adjacencyMatrixGraph);
 
