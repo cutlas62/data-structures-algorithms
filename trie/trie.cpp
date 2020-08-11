@@ -9,7 +9,8 @@ class TrieNode
 public:
 
     TrieNode (void):
-        children (26, nullptr)
+        children (26, nullptr),
+        isEnd(false)
     {
     }
 
@@ -59,8 +60,8 @@ public:
     void insert (string str)
     {
         TrieNode *curNode = root;
-        int strLength = str.length();
-        for (int i = 0; i < strLength; i++)
+        unsigned int strLength = str.length();
+        for (unsigned int i = 0; i < strLength; i++)
         {
             if (!curNode->containsKey(str[i]))
             {
@@ -71,6 +72,28 @@ public:
         curNode->setEnd();
 
     }
+
+    bool search (string str)
+    {
+        TrieNode *curNode = searchPrefix(str);
+        return (curNode != nullptr && curNode->getEnd());
+    }
+
+    TrieNode *searchPrefix (string str)
+    {
+        TrieNode *curNode = root;
+        unsigned int strLength = str.length();
+        for (unsigned int i = 0; i < strLength; i++)
+        {
+            if (!curNode->containsKey(str[i]))
+            {
+                return nullptr;
+            }
+            curNode = curNode->get(str[i]);
+        }
+        return curNode;
+    }
+
 
 private:
 
@@ -83,7 +106,19 @@ private:
 int main (int argc, char *argv[])
 {
 
-    Trie *root = new Trie();
+    Trie *_trie = new Trie();
+
+    _trie->insert("cacatua");
+    _trie->insert("cacatuas");
+    _trie->insert("caca");
+    _trie->insert("cacaza");
+    _trie->insert("cactus");
+    _trie->insert("cacasara");
+    _trie->insert("cacatri");
+
+
+    printf("cacatua exists: %s\n", _trie->search("cacatua") ? "Yes" : "No");
+
 
 
 }
