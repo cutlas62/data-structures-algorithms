@@ -3,6 +3,7 @@
 #include <stack>
 #include <deque>
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
 #include <cmath>
@@ -338,6 +339,132 @@ bool isBalanced (BinaryTreeNode *head)
     return true;
 }
 
+void inOrderTraversal (BinaryTreeNode *root)
+{
+    // In-Order: left -> root -> right
+    unordered_set<BinaryTreeNode *> visitedNodes;
+    stack<BinaryTreeNode *> nodesToVisit;
+    nodesToVisit.push(root);
+
+    while (!nodesToVisit.empty())
+    {
+        BinaryTreeNode *curNode = nodesToVisit.top();
+
+
+        // Left
+        if (curNode->_left != nullptr)
+        {
+            if (visitedNodes.find(curNode->_left) == visitedNodes.end())
+            {
+                nodesToVisit.push(curNode->_left);
+                continue;
+            }
+        }
+
+        // Root
+        printf("%c ", curNode->_value);
+        visitedNodes.insert(curNode);
+        nodesToVisit.pop();
+
+        // Right
+        if (curNode->_right != nullptr)
+        {
+            if (visitedNodes.find(curNode->_right) == visitedNodes.end())
+            {
+                nodesToVisit.push(curNode->_right);
+            }
+        }
+    }
+    printf("\n");
+}
+
+void preOrderTraversal(BinaryTreeNode *root)
+{
+    //Pre-Order: root -> left -> right
+
+    unordered_set<BinaryTreeNode *> visitedNodes;
+    stack <BinaryTreeNode *>nodesToVisit;
+    nodesToVisit.push(root);
+
+    while(!nodesToVisit.empty())
+    {
+        BinaryTreeNode *curNode = nodesToVisit.top();
+        nodesToVisit.pop();
+
+        // Root
+        visitedNodes.insert(curNode);
+        printf("%c ", curNode->_value);
+
+        // We need to push the right child in the stack before the left child
+        // so that the left child will be visted before
+        // Right
+        if (curNode->_right != nullptr)
+        {
+            if (visitedNodes.find(curNode->_right) == visitedNodes.end())
+            {
+                nodesToVisit.push(curNode->_right);
+            }
+        }
+
+        // Left
+        if (curNode->_left != nullptr)
+        {
+            if (visitedNodes.find(curNode->_left) == visitedNodes.end())
+            {
+                nodesToVisit.push(curNode->_left);
+            }
+        }
+    }
+    printf("\n");
+}
+
+void postOrderTraversal (BinaryTreeNode *root)
+{
+    // Post-Order: left -> right -> root
+
+    unordered_set<BinaryTreeNode *> visitedNodes;
+    stack<BinaryTreeNode *> nodesToVisit;
+    nodesToVisit.push(root);
+
+    while(!nodesToVisit.empty())
+    {
+        BinaryTreeNode *curNode = nodesToVisit.top();
+        bool hasChildren = false;
+
+        // We need to push the right child in the stack before the left child
+        // so that the left child will be visted before
+        // Right
+        if (curNode->_right != nullptr)
+        {
+            if (visitedNodes.find(curNode->_right) == visitedNodes.end())
+            {
+                nodesToVisit.push(curNode->_right);
+                hasChildren = true;
+            }
+        }
+
+        // Left
+        if (curNode->_left != nullptr)
+        {
+            if (visitedNodes.find(curNode->_left) == visitedNodes.end())
+            {
+                nodesToVisit.push(curNode->_left);
+                hasChildren = true;
+            }
+        }
+
+        // Root
+        if(!hasChildren)
+        {
+            printf("%c ", curNode->_value);
+            nodesToVisit.pop();
+            visitedNodes.insert(curNode);
+        }
+    }
+    printf("\n");
+}
+
+
 int main (int argc, char *argv [])
 {
     BinaryTreeNode *a = new BinaryTreeNode ('A');
@@ -386,4 +513,12 @@ int main (int argc, char *argv [])
 
     printf("\nIs it a perfect tree? %s\n\n", isPerfect(a) ? "Yes" : "No");
     printf("\nIs it a balanced tree? %s\n\n", isBalanced(a) ? "Yes" : "No");
+
+    printf("In-Order: ");
+    inOrderTraversal(a);
+    printf("Pre-Order: ");
+    preOrderTraversal(a);
+    printf("Post-Order: ");
+    postOrderTraversal(a);
+
 }
